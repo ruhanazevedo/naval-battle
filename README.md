@@ -1,6 +1,11 @@
 # Naval-battle :boat:
 
 *Elevate your PDF interactions with Naval-Battle, the revolutionary tool that seamlessly captures the coordinates of your clicks on any PDF document.*
+<p align="center">
+  <a href="https://snyk.io/test/github/ruhanazevedo/naval-battle">
+  <img src="https://snyk.io/test/github/ruhanazevedo/naval-battle/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/ruhanazevedo/naval-battle" style="max-width:100%;">
+  </a>
+</p>
 
 ## About
 
@@ -61,9 +66,8 @@ Click anywhere on the PDF to identify and capture the precise coordinates of you
 Use the navigational arrows to maneuver your fleet across the digital battlefield
 ![image](https://github.com/ruhanazevedo/naval-battle/assets/37676775/92cf7e0c-e038-433b-b2e2-bfab008b6c4d)
 
-
 ## Author
-
-Ruhan Azevedo
+| [<img src="https://avatars.githubusercontent.com/u/37676775?s=96&v=4" width="155"><br><sub>@ruhanazevedo</sub>](https://github.com/ruhanazevedo) |
+| :---: |
 
 <a href="https://www.buymeacoffee.com/ruhanazevedo" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
