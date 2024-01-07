@@ -4,6 +4,8 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -14,9 +16,13 @@ public class PdfController {
 
     private Pdf pdf;
     private ImageIcon imageIcon;
+    private int pageIndex;
+    private JLabel view;
 
     public PdfController(Pdf pdf) {
         this.pdf = pdf;
+        view = new JLabel();
+        imageIcon = new ImageIcon();
     }
 
     /**
@@ -24,16 +30,17 @@ public class PdfController {
      */
     public void turnImage() {
         String pdfLocation = pdf.getLocation();
-        imageIcon = null;
         try (PDDocument document = PDDocument.load(new File(pdfLocation))) {
             PDFRenderer pdfRenderer = new PDFRenderer(document);
-            for (int page = 0; page < document.getNumberOfPages(); ++page) {
-                BufferedImage bim = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
-                imageIcon = new ImageIcon();
-                imageIcon.setImage(bim);
-                System.out.println("Width = " + imageIcon.getIconWidth() + " | Height = " + imageIcon.getIconHeight());
-            }
-            document.close();
+            BufferedImage bim = pdfRenderer.renderImageWithDPI(pageIndex, 300, ImageType.RGB);
+            System.out.println("pageIndex = "+pageIndex);
+            imageIcon.setImage(bim);
+            System.out.println("Width = " + imageIcon.getIconWidth() + " | Height = " + imageIcon.getIconHeight());
+            final int width = (int) ((imageIcon.getIconWidth() * 0.3204272363150868));
+            final int height = (int) (imageIcon.getIconHeight() * 0.3204272363150868);
+            imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING));
+            view.setIcon(imageIcon);
+            //coordinateWindow();
         } catch (IOException e) {
             System.err.println("Exception while trying to create pdf document - " + e);
         }
@@ -49,23 +56,49 @@ public class PdfController {
         frame.setResizable(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setLocation(screenSize.width / 2, screenSize.height / 4);
-
-        final int width = (int) ((imageIcon.getIconWidth() * 0.3204272363150868));
-        final int height = (int) (imageIcon.getIconHeight() * 0.3204272363150868);
         System.out.println("Width = " + imageIcon.getIconWidth() + " | Height = " + imageIcon.getIconHeight());
-        imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING));
         System.out.println("Width = " + imageIcon.getIconWidth() + " | Height = " + imageIcon.getIconHeight());
-        final JLabel jb = new JLabel(imageIcon);
-        Insets insets = jb.getInsets();
-        frame.setSize(new Dimension(insets.left + insets.right + width, insets.bottom + insets.top + height));
 
-        JScrollPane jsp = new JScrollPane(jb);
+        Insets insets = view.getInsets();
+        frame.setSize(new Dimension(insets.left + insets.right + imageIcon.getIconWidth(), insets.bottom + insets.top + imageIcon.getIconHeight()));
+
+        JScrollPane jsp = new JScrollPane(view);
         frame.add(jsp);
-        frame.setSize(width, height);
+        frame.setSize(imageIcon.getIconWidth(), imageIcon.getIconHeight());
 
-        final JTextField text = new JTextField();
-        frame.add(text, BorderLayout.SOUTH);
-        jb.addMouseListener(new MouseListener() {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBounds(10,10,10,10);
+        final JButton previous = new JButton("<");
+        previous.setEnabled(false);
+        previous.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("<");
+                if(pageIndex-1 == 0){
+                    pageIndex--;
+                    previous.setEnabled(false);
+                }
+                turnImage();
+            }
+        });
+        final JButton next = new JButton(">");
+        next.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(">");
+                previous.setEnabled(true);
+                pageIndex++;
+                turnImage();
+            }
+        });
+
+        buttonPanel.add(previous);
+        buttonPanel.add(next);
+        frame.add(buttonPanel, BorderLayout.WEST);
+
+        final JLabel clickCoordinate = new JLabel();
+        frame.add(clickCoordinate, BorderLayout.SOUTH);
+        view.addMouseListener(new MouseListener() {
             public void mousePressed(MouseEvent me) {
             }
 
@@ -79,16 +112,16 @@ public class PdfController {
             }
 
             public void mouseClicked(MouseEvent me) {
-                Float pageHeight = Float.valueOf(jb.getHeight());
-                ImmutablePair pair = convertingCoordinates(me.getX(), me.getY(), jb.getWidth(), jb.getHeight(), width, height, pageHeight);
+                Float pageHeight = Float.valueOf(view.getHeight());
+                ImmutablePair pair = convertingCoordinates(me.getX(), me.getY(), view.getWidth(), view.getHeight(), imageIcon.getIconWidth(), imageIcon.getIconHeight(), pageHeight);
                 Float x = (Float) pair.getKey();
                 Float y = (Float) pair.getValue();
                 int X = (int) (x * 0.7423580786026201);
                 int Y = (int) (y * 0.7407407407407407);
-                if (x > width || x < 0 || y > height || y < 0) {
-                    text.setText("SELECIONE UMA POSIÇÃO VÁLIDA");
+                if (x > imageIcon.getIconWidth() || x < 0 || y > imageIcon.getIconHeight() || y < 0) {
+                    clickCoordinate.setText("SELECIONE UMA POSIÇÃO VÁLIDA");
                 } else {
-                    text.setText("X:" + X + "f ; Y:" + Y + "f");
+                    clickCoordinate.setText("X:" + X + "f ; Y:" + Y + "f");
                 }
             }
         });

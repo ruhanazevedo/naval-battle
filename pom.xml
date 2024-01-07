@@ -6,7 +6,7 @@
 
     <groupId>com.pkg.naval-battle</groupId>
     <artifactId>naval-battle</artifactId>
-    <version>1.2</version>
+    <version>v0.2.0</version>
     <build>
         <plugins>
             <plugin>
