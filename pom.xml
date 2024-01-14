@@ -6,7 +6,7 @@
 
     <groupId>com.pkg.naval-battle</groupId>
     <artifactId>naval-battle</artifactId>
-    <version>v1.0.0</version>
+    <version>v1.0.1</version>
     <build>
         <plugins>
             <plugin>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.1.1</version>
+            <version>3.6.0</version>
         </dependency>
 
         <dependency>
